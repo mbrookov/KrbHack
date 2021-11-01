@@ -26,10 +26,23 @@ public class krbHackConfiguration extends AbstractConfiguration {
 
     private String sampleProperty;
 
+    private String script;
+    private String adminPrincipal;
+    private String keytab;
+
     @Override
     public void validate() {
         //todo implement
     }
+
+    @ConfigurationProperty(displayMessageKey = "krbhack.config.script", helpMessageKey = "krbhack.config.script.help", order = 1)
+    public String getScript() { return script; }
+
+    @ConfigurationProperty(displayMessageKey = "krbhack.config.adminPrincipal", helpMessageKey = "krbhack.config.script.help", order = 2)
+    public String getAdminPrincipal() { return adminPrincipal; }
+
+    @ConfigurationProperty(displayMessageKey = "krbhack.config.keytab", helpMessageKey = "krbhack.config.keytab.help", order = 3)
+    public String getKeytab() { return keytab; }
 
     @ConfigurationProperty(displayMessageKey = "krbhack.config.sampleProperty",
             helpMessageKey = "krbhack.config.sampleProperty.help")
