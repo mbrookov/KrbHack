@@ -16,13 +16,17 @@
 
 package edu.mines.krbHack;
 
-import org.identityconnectors.framework.spi.AbstractConfiguration;
+import org.identityconnectors.common.StringUtil;
 import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.exceptions.ConfigurationException;
+import org.identityconnectors.framework.spi.AbstractConfiguration;
 import org.identityconnectors.framework.spi.ConfigurationProperty;
 
-public class krbHackConfiguration extends AbstractConfiguration {
+import java.util.Objects;
 
-    private static final Log LOG = Log.getLog(krbHackConfiguration.class);
+public class KrbHackConfiguration extends AbstractConfiguration {
+
+    private static final Log LOG = Log.getLog(KrbHackConfiguration.class);
 
     private String sampleProperty;
 
@@ -32,25 +36,69 @@ public class krbHackConfiguration extends AbstractConfiguration {
 
     @Override
     public void validate() {
+        LOG.info("*************************validate called!");
+        if (StringUtil.isBlank(keytab)) {
+            throw new ConfigurationException("Ukeytab must not be blank!");
+        }
         //todo implement
     }
 
-    @ConfigurationProperty(displayMessageKey = "krbhack.config.script", helpMessageKey = "krbhack.config.script.help", order = 1)
-    public String getScript() { return script; }
+    @ConfigurationProperty(displayMessageKey = "krbhack.script.display", helpMessageKey = "krbhack.script.help", order = 1, required = true)
+    public String getScript() {
+        return script;
+    }
 
-    @ConfigurationProperty(displayMessageKey = "krbhack.config.adminPrincipal", helpMessageKey = "krbhack.config.script.help", order = 2)
-    public String getAdminPrincipal() { return adminPrincipal; }
+    public final void setScript(final String script) {
+        this.script = script;
+    }
 
-    @ConfigurationProperty(displayMessageKey = "krbhack.config.keytab", helpMessageKey = "krbhack.config.keytab.help", order = 3)
-    public String getKeytab() { return keytab; }
+    @ConfigurationProperty(required = true, displayMessageKey = "krbhack.adminPrincipal.display", helpMessageKey = "krbhack.adminPrincipal.help", order = 2)
+    public String getAdminPrincipal() {
+        return adminPrincipal;
+    }
 
-    @ConfigurationProperty(displayMessageKey = "krbhack.config.sampleProperty",
-            helpMessageKey = "krbhack.config.sampleProperty.help")
+    public final void setAdminPrincipal(final String adminPrincipal) {
+        this.adminPrincipal = adminPrincipal;
+    }
+
+    @ConfigurationProperty(required = true, displayMessageKey = "krbhack.keytab.display", helpMessageKey = "krbhack.keytab.help", order = 3)
+    public String getKeytab() {
+        return keytab;
+    }
+
+    public final void setKeytab(final String keytab) {
+        this.keytab = keytab;
+    }
+
+    @ConfigurationProperty(displayMessageKey = "krbhack.sampleProperty.display", helpMessageKey = "krbhack.sampleProperty.help", order = 4)
     public String getSampleProperty() {
         return sampleProperty;
     }
 
     public void setSampleProperty(String sampleProperty) {
         this.sampleProperty = sampleProperty;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof KrbHackConfiguration)) return false;
+        KrbHackConfiguration that = (KrbHackConfiguration) o;
+        return Objects.equals(sampleProperty, that.sampleProperty) && Objects.equals(script, that.script) && Objects.equals(adminPrincipal, that.adminPrincipal) && Objects.equals(keytab, that.keytab);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sampleProperty, script, adminPrincipal, keytab);
+    }
+
+    @Override
+    public String toString() {
+        return "krbHackConfiguration{" +
+                "sampleProperty='" + sampleProperty + '\'' +
+                ", script='" + script + '\'' +
+                ", adminPrincipal='" + adminPrincipal + '\'' +
+                ", keytab='" + keytab + '\'' +
+                '}';
     }
 }

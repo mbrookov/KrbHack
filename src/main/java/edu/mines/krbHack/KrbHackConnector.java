@@ -16,25 +16,28 @@
 
 package edu.mines.krbHack;
 
+import edu.mines.krbHack.search.Operand;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.objects.*;
+import org.identityconnectors.framework.common.objects.filter.FilterTranslator;
 import org.identityconnectors.framework.spi.Configuration;
 import org.identityconnectors.framework.spi.Connector;
 import org.identityconnectors.framework.spi.ConnectorClass;
 import org.identityconnectors.framework.spi.operations.CreateOp;
 import org.identityconnectors.framework.spi.operations.SchemaOp;
+import org.identityconnectors.framework.spi.operations.SearchOp;
 import org.identityconnectors.framework.spi.operations.TestOp;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@ConnectorClass(displayNameKey = "krbhack.connector.display", configurationClass = krbHackConfiguration.class)
-public class krbHackConnector implements Connector, CreateOp, TestOp, SchemaOp {
+@ConnectorClass(displayNameKey = "krbhack.connector.display", configurationClass = KrbHackConfiguration.class)
+public class KrbHackConnector implements Connector, CreateOp, TestOp, SchemaOp, SearchOp<Operand> {
 
-    private static final Log LOG = Log.getLog(krbHackConnector.class);
+    private static final Log LOG = Log.getLog(KrbHackConnector.class);
 
-    private krbHackConfiguration configuration;
-    private krbHackConnection connection;
+    private KrbHackConfiguration configuration;
+    private KrbHackConnection connection;
 
     @Override
     public Configuration getConfiguration() {
@@ -44,12 +47,12 @@ public class krbHackConnector implements Connector, CreateOp, TestOp, SchemaOp {
     @Override
     public void init(Configuration configuration) {
         LOG.ok("KrbHack Connector initialization started " + this.getClass().getName());
-        this.configuration = (krbHackConfiguration)configuration;
-        this.connection = new krbHackConnection(this.configuration);
+        this.configuration = (KrbHackConfiguration)configuration;
+        this.connection = new KrbHackConnection(this.configuration);
     }
 
     @Override
-    public void dispose() {
+    public final void dispose() {
         configuration = null;
         if (connection != null) {
             connection.dispose();
@@ -58,12 +61,13 @@ public class krbHackConnector implements Connector, CreateOp, TestOp, SchemaOp {
     }
 
     @Override
-    public void test() {
+    public final void test() {
+        LOG.info("*************************** Testing1..2..3..");
 
     }
 
     @Override
-    public Uid create(ObjectClass objectClass, Set<Attribute> set, OperationOptions operationOptions) {
+    public final Uid create(ObjectClass objectClass, Set<Attribute> set, OperationOptions operationOptions) {
         LOG.info("Create new user");
         System.out.println(operationOptions.getOptions());
 
@@ -74,8 +78,8 @@ public class krbHackConnector implements Connector, CreateOp, TestOp, SchemaOp {
     }
 
     @Override
-    public Schema schema() {
-        final SchemaBuilder schemaBuilder = new SchemaBuilder(krbHackConnector.class);
+    public final Schema schema() {
+        final SchemaBuilder schemaBuilder = new SchemaBuilder(KrbHackConnector.class);
         Set<AttributeInfo> attributes = new HashSet<AttributeInfo>();
         attributes = new HashSet<AttributeInfo>();
 
@@ -110,5 +114,17 @@ public class krbHackConnector implements Connector, CreateOp, TestOp, SchemaOp {
         return schemaBuilder.build();
     }
 
+    /* for SearchOp - you must implement FilterTranslator and executeQuery */
+    @Override
+    public final FilterTranslator<Operand> createFilterTranslator(ObjectClass objectClass, OperationOptions operationOptions) {
+        if (objectClass == null || (!objectClass.equals(ObjectClass.ACCOUNT)) && (!objectClass.equals(ObjectClass.GROUP)))
+            throw new IllegalArgumentException(this.getClass().getName() + " FilterTranslator - ObjecltClass must be ACCOUNT OR GROUP");
+        return new KrbHackFilterTranslator();
+    }
 
+    @Override
+    public final void executeQuery(ObjectClass objectClass, Operand operand, ResultsHandler resultsHandler, OperationOptions operationOptions) {
+        LOG.info("Execute Query!");
+
+    }
 }

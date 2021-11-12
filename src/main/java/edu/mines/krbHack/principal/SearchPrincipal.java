@@ -1,2 +1,5 @@
-package edu.mines.krbHack.principal;public class SearchPrincipal {
+package edu.mines.krbHack.principal;
+
+public class SearchPrincipal {
+
 }

@@ -18,13 +18,13 @@ package edu.mines.krbHack;
 
 import org.identityconnectors.common.logging.Log;
 
-public class krbHackConnection {
+public class KrbHackConnection {
 
-    private static final Log LOG = Log.getLog(krbHackConnection.class);
+    private static final Log LOG = Log.getLog(KrbHackConnection.class);
 
-    private krbHackConfiguration configuration;
+    private KrbHackConfiguration configuration;
 
-    public krbHackConnection(krbHackConfiguration configuration) {
+    public KrbHackConnection(KrbHackConfiguration configuration) {
         this.configuration = configuration;
     }
 
